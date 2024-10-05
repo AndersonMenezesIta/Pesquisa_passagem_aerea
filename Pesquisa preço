@@ -1,0 +1,76 @@
+import datetime
+import random
+
+class PassagemAerea:
+    def __init__(self, destino, preco, data_partida, companhia):
+        self.destino = destino
+        self.preco = preco
+        self.data_partida = data_partida
+        self.companhia = companhia
+
+def gerar_passagens_exemplo():
+    destinos = ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Recife"]
+    companhias = ["Azul", "Gol", "LATAM", "Passaredo"]
+    passagens = []
+    
+    for _ in range(50):
+        destino = random.choice(destinos)
+        preco = random.randint(200, 1000)
+        data = datetime.date.today() + datetime.timedelta(days=random.randint(1, 90))
+        companhia = random.choice(companhias)
+        passagens.append(PassagemAerea(destino, preco, data, companhia))
+    
+    return passagens
+
+def pesquisar_passagens(passagens, destino=None, preco_maximo=None, data_inicio=None, data_fim=None):
+    resultados = passagens
+    
+    if destino:
+        resultados = [p for p in resultados if p.destino.lower() == destino.lower()]
+    if preco_maximo:
+        resultados = [p for p in resultados if p.preco <= preco_maximo]
+    if data_inicio:
+        resultados = [p for p in resultados if p.data_partida >= data_inicio]
+    if data_fim:
+        resultados = [p for p in resultados if p.data_partida <= data_fim]
+    
+    return sorted(resultados, key=lambda x: x.preco)
+
+def main():
+    passagens = gerar_passagens_exemplo()
+    
+    while True:
+        print("\nPesquisa de Passagens Aéreas partindo de Belo Horizonte")
+        print("1. Pesquisar passagens")
+        print("2. Sair")
+        
+        opcao = input("Escolha uma opção: ")
+        
+        if opcao == "1":
+            destino = input("Destino (deixe em branco para todos): ")
+            preco_maximo = input("Preço máximo (deixe em branco para ignorar): ")
+            data_inicio = input("Data de início (YYYY-MM-DD, deixe em branco para ignorar): ")
+            data_fim = input("Data de fim (YYYY-MM-DD, deixe em branco para ignorar): ")
+            
+            preco_maximo = int(preco_maximo) if preco_maximo else None
+            data_inicio = datetime.datetime.strptime(data_inicio, "%Y-%m-%d").date() if data_inicio else None
+            data_fim = datetime.datetime.strptime(data_fim, "%Y-%m-%d").date() if data_fim else None
+            
+            resultados = pesquisar_passagens(passagens, destino, preco_maximo, data_inicio, data_fim)
+            
+            print("\nResultados da pesquisa:")
+            for i, passagem in enumerate(resultados[:10], 1):
+                print(f"{i}. {passagem.destino} - R${passagem.preco} - {passagem.data_partida} - {passagem.companhia}")
+            
+            if not resultados:
+                print("Nenhuma passagem encontrada com os critérios especificados.")
+        
+        elif opcao == "2":
+            print("Obrigado por usar nosso sistema de pesquisa de passagens aéreas!")
+            break
+        
+        else:
+            print("Opção inválida. Por favor, tente novamente.")
+
+if __name__ == "__main__":
+    main()
